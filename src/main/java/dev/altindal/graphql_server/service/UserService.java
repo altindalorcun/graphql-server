@@ -37,12 +37,11 @@ public class UserService {
 
     public UserResponse updateUser(UserUpdateRequest request) {
         User oldUser = repository.findById(request.id()).orElseThrow(UserNotFoundException::new);
-        oldUser.setUsername(request.username());
         oldUser.setPassword(request.password());
         oldUser.setFirstName(request.firstName());
         oldUser.setLastName(request.lastName());
         oldUser.setEmail(request.mail());
-        oldUser.setRole(request.role());
+        oldUser.setRole(Role.getRoleByName(request.role()));
         User updated = repository.save(oldUser);
         return new UserResponse(updated);
     }

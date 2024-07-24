@@ -4,10 +4,15 @@ import dev.altindal.graphql_server.dto.UserCreateRequest;
 import dev.altindal.graphql_server.dto.UserResponse;
 import dev.altindal.graphql_server.dto.UserUpdateRequest;
 import dev.altindal.graphql_server.service.UserService;
+import org.reactivestreams.Publisher;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.graphql.data.method.annotation.SubscriptionMapping;
 import org.springframework.stereotype.Controller;
+import reactor.core.publisher.ConnectableFlux;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,9 +21,16 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService service;
+    private FluxSink<UserResponse> userStream;
+    private final ConnectableFlux<UserResponse> userPublisher;
 
     public UserController(UserService service) {
         this.service = service;
+        Flux<UserResponse> publisher = Flux.create(emitter -> {
+            userStream = emitter;
+        });
+        userPublisher = publisher.publish();
+        userPublisher.connect();
     }
 
     @QueryMapping
@@ -33,18 +45,27 @@ public class UserController {
 
     @MutationMapping
     public UserResponse createUser(@Argument UserCreateRequest userCreateRequest) {
-        return service.createUser(userCreateRequest);
+        UserResponse userResponse = service.createUser(userCreateRequest);
+        userStream.next(userResponse);
+        return userResponse;
     }
 
     @MutationMapping
     public UserResponse updateUser(@Argument UserUpdateRequest userUpdateRequest) {
-        return service.updateUser(userUpdateRequest);
+        UserResponse userResponse = service.updateUser(userUpdateRequest);
+        userStream.next(userResponse);
+        return userResponse;
     }
 
     @MutationMapping
     public Boolean deleteUser(@Argument UUID id) {
         service.deleteUser(id);
         return true;
+    }
+
+    @SubscriptionMapping
+    public Publisher<UserResponse> userStatusChanged() {
+        return userPublisher;
     }
 
 }

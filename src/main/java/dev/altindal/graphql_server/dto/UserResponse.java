@@ -1,6 +1,5 @@
 package dev.altindal.graphql_server.dto;
 
-import dev.altindal.graphql_server.model.Role;
 import dev.altindal.graphql_server.model.User;
 
 import java.time.OffsetDateTime;
@@ -14,10 +13,10 @@ public record UserResponse(
         String firstName,
         String lastName,
         String mail,
-        Role role
+        String role
 ) {
     public UserResponse(User user) {
         this(user.getId(),user.getCreatedAt(), user
-                .getUpdatedAt(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole());
+                .getUpdatedAt(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole().name());
     }
 }

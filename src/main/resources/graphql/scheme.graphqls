@@ -12,6 +12,10 @@ type Mutation {
     deleteUser(id : UUID!) : Boolean
 }
 
+type Subscription {
+    userStatusChanged : UserResponse
+}
+
 type UserResponse {
     id : UUID,
     createdAt: DateTime
