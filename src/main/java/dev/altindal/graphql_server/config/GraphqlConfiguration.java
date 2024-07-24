@@ -24,14 +24,4 @@ public class GraphqlConfiguration {
             }
         };
     }
-
-    @Bean
-    @Order(0)
-    public RouterFunction<ServerResponse> graphiQlRouterFunction() {
-        RouterFunctions.Builder builder = RouterFunctions.route();
-        ClassPathResource graphiQlPage = new ClassPathResource("graphiql/index.html");
-        GraphiQlHandler graphiQLHandler = new GraphiQlHandler("/graphql", "", graphiQlPage);
-        builder = builder.GET("/graphiql", graphiQLHandler::handleRequest);
-        return builder.build();
-    }
 }

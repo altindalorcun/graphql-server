@@ -40,15 +40,6 @@ public class User extends BaseModel {
         setFirstName(request.firstName());
         setLastName(request.lastName());
         setEmail(request.mail());
-        setRole(request.role());
-    }
-
-    public User(UserUpdateRequest request) {
-        setUsername(request.username());
-        setPassword(request.password());
-        setFirstName(request.firstName());
-        setLastName(request.lastName());
-        setEmail(request.mail());
-        setRole(request.role());
+        setRole(Role.getRoleByName(request.role()));
     }
 }
